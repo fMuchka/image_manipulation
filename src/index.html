@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Manipulation</title>
+
+    <script type="text/javascript" src="main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.4.0/fabric.min.js"></script>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+
+    <div id="control-panel">
+        <label
+            class="fileSelect"
+        >
+            Select Image
+            <input 
+                type="file"
+                onchange="updateImage()"
+            >
+        </label>
+
+        <button
+            onclick="defaultIMG()"
+            class="fileSelect"
+        >
+            Use Default IMG
+        </button>
+    </div>
+    
+    <div id="wrapper">
+        <div id="img-container">
+            <p id="message">Image will display here.</p>
+        
+            <canvas
+                height="500px"
+                width="500px"
+            ></canvas>
+        </div>
+        
+        <div id="info">
+            <ul>
+                <li>
+                    <b>Hold alt</b> and <b>scroll</b> with cursor over image to zoom in/out.
+                </li>
+                <li>
+                    <button
+                        onclick="toggleDrawingMode()"
+                    >
+                        Toggle Drawing Mode
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+</body>
+</html>

@@ -1,0 +1,40 @@
+#img-container {
+  width: 500px;
+  height: 500px;
+
+  padding: 10px;
+
+  background-color: grey;
+  overflow: scroll;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.fileSelect {
+  padding: 0;
+  background-color: #03a9f4;
+  font-size: 16px;
+  display: flex;
+  width: 150px;
+  border: 2px outset darkgrey;
+  border-radius: 5px;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+  font: 400 13.3333px Arial;
+  height: 50px;
+  margin: 5px;
+  box-sizing: unset;
+}
+
+.fileSelect:hover {
+  color: silver;
+}
+
+#control-panel,
+#wrapper {
+  display: flex;
+}
