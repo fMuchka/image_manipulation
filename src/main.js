@@ -72,7 +72,7 @@ function defaultScaleIMG({ canvas, img }) {
 function zoom(e) {
     if (altPressed) {
         e.preventDefault();
-        
+        const cObjects = canvas._objects;
         const delta = e.wheelDelta / 120;
         let factor = 0.8;
         
@@ -85,17 +85,20 @@ function zoom(e) {
             y: e.clientY - canvas._offset.top
         };
         
-        // Zoom into the image.
-        img.scaleX = img.scaleX * factor;
-        img.scaleY = img.scaleY * factor;
+        for (let i = 0; i < cObjects.length; i++) {
+            const obj = cObjects[i];
+            // Zoom into the image.
+            obj.scaleX = obj.scaleX * factor;
+            obj.scaleY = obj.scaleY * factor;
 
-        // Calculate displacement of zooming position.
-        let dx = (currentMouse.x - img.left) * (factor - 1),
-            dy = (currentMouse.y - img.top) * (factor - 1);
-        // Compensate for displacement.
-        img.left = img.left - dx;
-        img.top = img.top - dy;
-        
+            // Calculate displacement of zooming position.
+            let dx = (currentMouse.x - obj.left) * (factor - 1),
+                dy = (currentMouse.y - obj.top) * (factor - 1);
+            // Compensate for displacement.
+            obj.left = obj.left - dx;
+            obj.top = obj.top - dy;
+        }
+                
         canvas.renderAll();
     }
 }
@@ -103,7 +106,7 @@ function zoom(e) {
 function toggleDrawingMode() {
     canvas.isDrawingMode = !canvas.isDrawingMode;
 
-    console.log(canvas.isDrawingMode);
+    document.getElementById("draw-mode-status").innerText = canvas.isDrawingMode.toString().toUpperCase();
 }
 
 
