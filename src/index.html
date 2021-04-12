@@ -48,12 +48,23 @@
                 </li>
                 <li>
                     <button
+                        class=""
                         onclick="toggleDrawingMode()"
                     >
-                        Toggle Drawing Mode
+                        Activate Draw Mode
+                    </button>
+                </li>
+                <li>
+                    <button
+                        onclick="listDrawnPaths()"
+                    >
+                        List Drawn Paths
                     </button>
 
-                    <div>Active: <div id="draw-mode-status">FALSE</div></div>
+                    <div
+                        id="drawn-paths-list"
+                    >
+                    </div>
                 </li>
             </ul>
         </div>

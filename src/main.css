@@ -38,3 +38,30 @@ input[type="file"] {
 #wrapper {
   display: flex;
 }
+
+button.active {
+  background-color: yellow;
+  border-radius: 5px;
+  border: 2px outset darkgrey;
+}
+
+#drawn-paths-list {
+  display: flex;
+  flex-direction: row;
+  visibility: hidden;
+  position: absolute;
+}
+
+#drawn-paths-list.show {
+  visibility: visible;
+  background-color: #cddc39;
+  border: 1px solid black;
+}
+
+#drawn-paths-list div {
+  margin: 5px;
+}
+
+.list-title {
+  font-weight: bold;
+}

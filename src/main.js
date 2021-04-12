@@ -3,6 +3,7 @@ let altPressed = false;
 let img;
 let ctx;
 let canvas;
+let isAllSelected = false;
 
 function defaultIMG() {
     const container = document.getElementById("img-container");
@@ -25,9 +26,29 @@ function defaultIMG() {
             
         canvas._objects = [];
         canvas.add(img);
+
+        addListenersToIMG(img);
     };
 
     img.src = "../assets/test.png";
+}
+
+function addListenersToIMG(img) {
+    img.on("selected", (options) => {
+        if (!isAllSelected) {
+            canvas.discardActiveObject();
+            let sel = new fabric.ActiveSelection(canvas.getObjects(), {
+                    canvas: canvas,
+                });
+            isAllSelected = true;
+            canvas.setActiveObject(sel);
+            canvas.requestRenderAll();   
+        }
+    });
+
+    img.on("deselected", (options) => {
+        isAllSelected = false;
+    })
 }
 
 function updateImage() {
@@ -98,7 +119,7 @@ function zoom(e) {
             obj.left = obj.left - dx;
             obj.top = obj.top - dy;
         }
-                
+
         canvas.renderAll();
     }
 }
@@ -106,7 +127,53 @@ function zoom(e) {
 function toggleDrawingMode() {
     canvas.isDrawingMode = !canvas.isDrawingMode;
 
-    document.getElementById("draw-mode-status").innerText = canvas.isDrawingMode.toString().toUpperCase();
+    const button = event.target;
+    const isActive = canvas.isDrawingMode;
+
+    button.innerText = isActive ? "Disable Draw Mode" : "Activate Draw Mode";
+    button.classList.toggle("active")
+}
+
+function listDrawnPaths() {
+    const list = document.getElementById("drawn-paths-list");
+    list.classList.toggle("show");
+
+    const isShown = list.classList.contains("show");
+    const cObjects = canvas._objects;
+
+    list.innerHTML = "";
+    let objToWrite = [];
+
+    for (let i = 0; i < cObjects.length; i++) {
+        const obj = cObjects[i];
+        
+        if (obj.constructor.prototype.type === "path") {
+            let pathPoints = obj.path;
+
+            objToWrite[objToWrite.length] = {
+                id: `Path_${objToWrite.length}`,
+                points: []
+            };
+
+            for (let j = 0; j < pathPoints.length; j++) {
+                const point = pathPoints[j];
+                objToWrite[objToWrite.length - 1].points.push(point.toString());
+            }
+        }
+    }
+
+    objToWrite.forEach((e) => {
+        let column = document.createElement("DIV");
+        column.innerHTML = `<div class="list-title">${e.id}</div>`;
+        
+        e.points.forEach((p) => {
+            column.innerHTML += `<div>${p}</div>`;
+        });
+
+        list.appendChild(column);
+    });
+
+    event.target.innerText = isShown ? "Hide Drawn Paths" : "List Drawn Paths";
 }
 
 
@@ -115,7 +182,7 @@ window.onload = () => {
     const canvasWrapper = document.getElementById("img-container");
     
     canvasWrapper.onwheel = zoom;
-
+    
     window.addEventListener("keydown", (keyEvent) => {
         if (keyEvent.key === "Alt") {
             altPressed = true;
