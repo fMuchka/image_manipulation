@@ -4,6 +4,9 @@ let img;
 let ctx;
 let canvas;
 let isAllSelected = false;
+let isPolygonDraw = false;
+let polygonPoints = [];
+let polygonLines = [];
 
 function defaultIMG() {
     const container = document.getElementById("img-container");
@@ -131,7 +134,132 @@ function toggleDrawingMode() {
     const isActive = canvas.isDrawingMode;
 
     button.innerText = isActive ? "Disable Draw Mode" : "Activate Draw Mode";
-    button.classList.toggle("active")
+    button.classList.toggle("active");
+}
+
+function drawPolygon() {
+    const button = event.target;
+    button.classList.toggle("active");
+
+    if (!isPolygonDraw) {
+        isPolygonDraw = true;
+        img.hoverCursor = "crosshair";
+        img.__eventListeners = {};
+
+        img.on("mousedown", (settings) => {
+            const { x, y } = settings.pointer;
+            const pointOption = {
+                id: new Date().getTime(),
+                radius: 5,
+                fill: '#ffffff',
+                stroke: '#333333',
+                strokeWidth: 0.5,
+                left: x,
+                top: y,
+                selectable: false,
+                hasBorders: false,
+                hasControls: false,
+                originX: 'center',
+                originY: 'center',
+                objectCaching: false,
+            };
+            const point = new fabric.Circle(pointOption);
+
+            if (polygonPoints.length === 0) {
+                point.set({
+                    fill: "yellow"
+                });
+
+                point.on("mousedown", (pointSettings) => {
+                    if (polygonPoints.length > 2) {
+                        createPolygon();
+                    }
+                });
+            }
+            polygonPoints.push(point);
+            canvas.add(point);
+
+            const lineOption = {
+                strokeWidth: 2,
+                fill: '#999999',
+                stroke: '#999999',
+                originX: 'center',
+                originY: 'center',
+                selectable: false,
+                hasBorders: false,
+                hasControls: false,
+                evented: false,
+                objectCaching: false,
+            };
+
+            if (polygonPoints.length > 1) {
+                const linePoints = [
+                    polygonPoints[polygonPoints.length - 2].left,
+                    polygonPoints[polygonPoints.length - 2].top,
+                    polygonPoints[polygonPoints.length - 1].left,
+                    polygonPoints[polygonPoints.length - 1].top
+                ];
+                const line = new fabric.Line(linePoints, lineOption);
+                line.class = 'line';
+
+                polygonLines.push(line);
+                canvas.add(line);   
+            }
+
+            canvas.discardActiveObject().renderAll();
+        });
+    }
+    else {
+        clearPolygonElements();
+    }
+
+}
+
+function createPolygon() {
+    document.getElementById("draw-polygon").classList.toggle("active");
+    const points = clearPolygonElements();
+    
+    const polygon = new fabric.Polygon(points, {
+        id: new Date().getTime(),
+        stroke: 'blue',
+        fill: '#ffff0038',
+        objectCaching: false,
+        moveable: true,
+        selectable: false
+    });
+
+    canvas.add(polygon);
+    canvas.discardActiveObject().renderAll();
+
+    addListenersToIMG(img);
+}
+
+function clearPolygonElements() {
+    const points = [];
+    // collect points and remove them from canvas
+    for (const point of polygonPoints) {
+        points.push({
+            x: point.left,
+            y: point.top,
+        });
+        canvas.remove(point);
+    }
+
+    polygonPoints = [];
+
+    // remove lines from canvas
+    for (const line of polygonLines) {
+        canvas.remove(line);
+    }
+
+    polygonLines = [];
+
+    canvas.discardActiveObject().renderAll();
+    isPolygonDraw = false;
+    img.hoverCursor = "move";
+    delete img.__eventListeners.mousedown;
+
+    return points;
 }
 
 function listDrawnPaths() {
