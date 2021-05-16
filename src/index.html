@@ -27,17 +27,36 @@
             onclick="defaultIMG()"
             class="fileSelect"
         >
-            Use Default IMG
+            Use Sample IMG
+        </button>
+
+        <button 
+            onclick="drawPolygon()" 
+            id="draw-polygon"
+            class="control-button"
+        >
+            Start Polygon Draw
+        </button>
+
+        <button 
+            onclick="listPolygonCoordinates()"
+            class="control-button"
+        >
+            List Polygon Coordinates
         </button>
     </div>
     
     <div id="wrapper">
         <div id="img-container">
             <p id="message">Image will display here.</p>
+
+            <label for="zoom">Zoom
+                <input type="range" id="zoom" min="-5" max="5">
+            </label>
         
             <canvas
-                height="500px"
-                width="500px"
+                height="70vh"
+                width="90vw"
             ></canvas>
         </div>
         
@@ -46,35 +65,10 @@
                 <li>
                     <b>Hold alt</b> and <b>scroll</b> with cursor over image to zoom in/out.
                 </li>
-                <li>
-                    <button
-                        class=""
-                        onclick="toggleDrawingMode()"
-                    >
-                        Activate Draw Mode
-                    </button>
-                </li>
-                <li>
-                    <button
-                        onclick="listDrawnPaths()"
-                    >
-                        List Drawn Paths
-                    </button>
-
-                    <div
-                        id="drawn-paths-list"
-                    >
-                    </div>
-                </li>
-                <li>
-                    <button
-                        onclick="drawPolygon()"
-                        id="draw-polygon"
-                    >
-                        Start Polygon Draw
-                    </button>
-                </li>
             </ul>
+        </div>
+
+        <div id="drawn-point-coordinates">
         </div>
     </div>
     

@@ -7,6 +7,9 @@ let isAllSelected = false;
 let isPolygonDraw = false;
 let polygonPoints = [];
 let polygonLines = [];
+let polygonCoordinates = [];
+
+let defaultSize = 0;
 
 function defaultIMG() {
     const container = document.getElementById("img-container");
@@ -42,7 +45,8 @@ function addListenersToIMG(img) {
             canvas.discardActiveObject();
             let sel = new fabric.ActiveSelection(canvas.getObjects(), {
                     canvas: canvas,
-                });
+            });
+            
             isAllSelected = true;
             canvas.setActiveObject(sel);
             canvas.requestRenderAll();   
@@ -91,6 +95,8 @@ function defaultScaleIMG({ canvas, img }) {
     const biggestDim = Math.round(img.width, img.height);
     const ratio = canvas.width / biggestDim;
     img.scale(ratio);
+
+    defaultSize = 1;
 }
 
 function zoom(e) {
@@ -122,6 +128,7 @@ function zoom(e) {
             obj.left = obj.left - dx;
             obj.top = obj.top - dy;
         }
+        
 
         canvas.renderAll();
     }
@@ -181,8 +188,8 @@ function drawPolygon() {
 
             const lineOption = {
                 strokeWidth: 2,
-                fill: '#999999',
-                stroke: '#999999',
+                fill: 'transparent',
+                stroke: 'transparent',
                 originX: 'center',
                 originY: 'center',
                 selectable: false,
@@ -228,6 +235,8 @@ function createPolygon() {
         selectable: false
     });
 
+    polygon.set({ "borderColor": "transparent" });
+
     canvas.add(polygon);
     canvas.discardActiveObject().renderAll();
 
@@ -236,6 +245,7 @@ function createPolygon() {
 
 function clearPolygonElements() {
     const points = [];
+
     // collect points and remove them from canvas
     for (const point of polygonPoints) {
         points.push({
@@ -244,6 +254,8 @@ function clearPolygonElements() {
         });
         canvas.remove(point);
     }
+
+    polygonCoordinates.push(points);
 
     polygonPoints = [];
 
@@ -262,6 +274,13 @@ function clearPolygonElements() {
     return points;
 }
 
+function listPolygonCoordinates() {
+    const list = document.getElementById("drawn-point-coordinates");
+
+    list.innerHTML = JSON.stringify(polygonCoordinates, null, "\t");
+}
+
+/*
 function listDrawnPaths() {
     const list = document.getElementById("drawn-paths-list");
     list.classList.toggle("show");
@@ -303,7 +322,7 @@ function listDrawnPaths() {
 
     event.target.innerText = isShown ? "Hide Drawn Paths" : "List Drawn Paths";
 }
-
+*/
 
 window.onload = () => {
     canvas = new fabric.Canvas(document.querySelector("canvas"));
@@ -322,4 +341,43 @@ window.onload = () => {
             altPressed = false;
        } 
     })
+
+    const zoomMeter = document.getElementById("zoom");
+
+    zoomMeter.addEventListener("input", function () {
+        let value = Number(this.value);
+        const objects = canvas._objects;
+        let scale = defaultSize + (value * 0.1);
+
+        const offset = {
+            x: img.x - canvas._offset.left,
+            y: img.y - canvas._offset.top
+        };
+
+        for (let i = 0; i < objects.length; i++) {
+            const obj = objects[i];
+            
+            obj.scaleX = scale;   
+            obj.scaleY = scale;
+
+            let dx = (offset.x - obj.left) * (scale - 1),
+                dy = (offset.y - obj.top) * (scale - 1);
+
+            obj.left = obj.left - dx;
+            obj.top = obj.top - dy;
+        }
+
+        canvas.renderAll();
+
+    });
+
+    function resizeCanvas() {
+        canvas.setHeight(window.innerHeight*0.7);
+        canvas.setWidth(window.innerWidth*0.9);
+        canvas.renderAll();
+    }
+
+    window.addEventListener('resize', resizeCanvas, false);
+
+    resizeCanvas();
 }
